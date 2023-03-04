@@ -2,6 +2,12 @@
 - name: Converge
   hosts: all
   tasks:
+
+    - name: Ensure original pod is removed.
+      containers.podman.podman_pod:
+        name: ha
+        state: absent
+
     - name: "Include palekiwi.homeassistant"
       ansible.builtin.include_role:
         name: "palekiwi.homeassistant"

@@ -7,7 +7,7 @@ driver:
     name: libvirt
 platforms:
   - name: instance
-    box: rockylinux/9
+    box: generic/debian11
     cpus: 2
     memory: 1024
 provisioner:

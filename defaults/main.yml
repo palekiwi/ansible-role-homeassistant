@@ -1,2 +1,22 @@
 ---
 # defaults file for homeassistant
+pod_name: ha
+
+# volumes
+remove_volume_dirs: false
+
+volumes:
+  ha_config: "/srv/ha/config"
+  mqtt_config: "/srv/mosquitto/config"
+  mqtt_data: "/srv/mosquitto/data"
+  mqtt_log: "/srv/mosquitto/log"
+  z2m_data: "/srv/zigbee2mqtt/data"
+
+
+# containers
+ha_name: "homeassistant"
+mqtt_name: "mosquitto"
+z2m_name: "zigbee2mqtt"
+
+# devices
+zigbee_adapter: "/dev/ttyUSB0"

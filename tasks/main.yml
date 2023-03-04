@@ -1,2 +1,18 @@
 ---
 # tasks file for homeassistant
+- name: Ensure podman is installed.
+  ansible.builtin.package:
+    name: podman
+    state: present
+  become: true
+
+- name: Ensure original volume dirs are removed.
+  ansible.builtin.file:
+    name: "{{ item.value }}"
+    state: absent
+  loop: "{{ volumes | dict2items }}"
+  become: true
+  when: remove_volume_dirs
+
+- name: Import zigbee2mqtt tasks.
+  ansible.builtin.import_tasks: zigbee2mqtt.yml
