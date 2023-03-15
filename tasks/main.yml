@@ -34,6 +34,9 @@
 - name: Import tasks for MQTT container.
   ansible.builtin.import_tasks: ha.yml
 
+- name: Import tasks for mqtt container.
+  ansible.builtin.import_tasks: mqtt.yml
+
 - name: Import tasks for zigbee2mqtt container.
   ansible.builtin.import_tasks: zigbee2mqtt.yml
 
