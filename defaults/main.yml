@@ -10,11 +10,5 @@ volumes:
   z2m_data: "/srv/zigbee2mqtt/data"
   appdaemon_conf: "/srv/appdaemon/conf"
 
-# containers
-ha_name: "homeassistant"
-mqtt_name: "mosquitto"
-z2m_name: "zigbee2mqtt"
-appdaemon_name: "appdaemon"
-
 # devices
 zigbee_adapter: "/dev/ttyUSB0"

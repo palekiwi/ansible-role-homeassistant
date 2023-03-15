@@ -5,7 +5,7 @@
 - name: Create HomeAssistant container.
   containers.podman.podman_container:
     pod: "{{ pod_name }}"
-    name: "{{ ha_name }}"
+    name: "{{ pod_name }}-homeassistant"
     image: "ghcr.io/home-assistant/home-assistant:stable"
     state: started
     restart_policy: "on-failure"

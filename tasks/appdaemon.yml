@@ -11,7 +11,7 @@
 - name: Create Appdaemon container.
   containers.podman.podman_container:
     pod: "{{ pod_name }}"
-    name: "{{ appdaemon_name }}"
+    name: "{{ pod_name }}-appdaemon"
     image: "docker.io/acockburn/appdaemon:latest"
     state: started
     restart_policy: "always"

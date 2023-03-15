@@ -21,7 +21,7 @@
 - name: Create zigbee2mqtt container.
   containers.podman.podman_container:
     pod: "{{ pod_name }}"
-    name: "{{ z2m_name }}"
+    name: "{{ pod_name }}-z2m"
     image: "docker.io/koenkk/zigbee2mqtt"
     state: started
     restart_policy: "on-failure"

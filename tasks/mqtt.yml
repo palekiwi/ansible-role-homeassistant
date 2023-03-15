@@ -14,7 +14,7 @@
 - name: Create Mosquitto container.
   containers.podman.podman_container:
     pod: "{{ pod_name }}"
-    name: "{{ mqtt_name }}"
+    name: "{{ pod_name }}-mqtt"
     image: "docker.io/library/eclipse-mosquitto"
     state: started
     restart_policy: "on-failure"
