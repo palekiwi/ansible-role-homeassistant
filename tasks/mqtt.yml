@@ -1,0 +1,25 @@
+---
+########################
+#  TASKS  #  mqtt.yml  #
+########################
+- name: Copy mosquitto configuration.
+  ansible.builtin.template:
+    src: templates/mqtt/mosquitto.conf.j2
+    dest: "{{ volumes['mqtt_config'] }}/mosquitto.conf"
+    mode: "0644"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  become: true
+
+- name: Create Mosquitto container.
+  containers.podman.podman_container:
+    pod: "{{ pod_name }}"
+    name: "{{ mqtt_name }}"
+    image: "docker.io/library/eclipse-mosquitto"
+    state: started
+    restart_policy: "on-failure"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "{{ volumes['mqtt_config'] }}/mosquitto.conf:/mosquitto/config/mosquitto.conf:Z"
+      - "{{ volumes['mqtt_data'] }}:/mosquitto/data:Z"
+      - "{{ volumes['mqtt_log'] }}:/mosquitto/log:Z"

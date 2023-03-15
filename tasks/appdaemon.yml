@@ -1,0 +1,24 @@
+---
+- name: Ensure validity of access token.
+  ansible.builtin.uri:
+    url: "http://localhost:8123/api/states"
+    headers:
+      Authorization: "Bearer {{ appdaemon_token }}"
+    status_code: 200
+    return_content: true
+  register: api
+
+- name: Create Appdaemon container.
+  containers.podman.podman_container:
+    pod: "{{ pod_name }}"
+    name: "{{ appdaemon_name }}"
+    image: "docker.io/acockburn/appdaemon:latest"
+    state: started
+    restart_policy: "always"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "{{ volumes['appdaemon_conf'] }}:/conf:Z"
+    env:
+      HA_URL: "http://localhost:8123"
+      DASH_URL: "http://localhost:5050"
+      TOKEN: "{{ appdaemon_token }}"

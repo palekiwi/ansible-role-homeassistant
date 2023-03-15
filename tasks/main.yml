@@ -1,18 +1,41 @@
 ---
-# tasks file for homeassistant
+########################
+#  TASKS  #  main.yml  #
+########################
 - name: Ensure podman is installed.
   ansible.builtin.package:
     name: podman
     state: present
   become: true
 
-- name: Ensure original volume dirs are removed.
+- name: Ensure the user belongs to group dialout.
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups: dialout
+    append: true
+  become: true
+
+- name: Ensure volume directories exist.
   ansible.builtin.file:
     name: "{{ item.value }}"
-    state: absent
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: "0755"
   loop: "{{ volumes | dict2items }}"
   become: true
-  when: remove_volume_dirs
 
-- name: Import zigbee2mqtt tasks.
+- name: Import tasks to create the pod.
+  ansible.builtin.import_tasks: pod.yml
+
+- name: Import tasks for Home Assistant container.
+  ansible.builtin.import_tasks: ha.yml
+
+- name: Import tasks for MQTT container.
+  ansible.builtin.import_tasks: ha.yml
+
+- name: Import tasks for zigbee2mqtt container.
   ansible.builtin.import_tasks: zigbee2mqtt.yml
+
+- name: Import tasks for appdaemon container.
+  ansible.builtin.import_tasks: appdaemon.yml

@@ -1,63 +1,7 @@
 ---
-# tasks file for zigbee2mqtt
-- name: Ensure the user belongs to group dialout.
-  ansible.builtin.user:
-    name: "{{ ansible_user_id }}"
-    groups: dialout
-    append: true
-  become: true
-
-- name: Ensure volume directories exist.
-  ansible.builtin.file:
-    name: "{{ item.value }}"
-    state: directory
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-    mode: "0755"
-  loop: "{{ volumes | dict2items }}"
-  become: true
-
-- name: Ensure a pod for HomeAssistant exists.
-  containers.podman.podman_pod:
-    name: "{{ pod_name }}"
-    state: created
-    publish:
-      - "8123:8123"
-      - "8080:8080"
-
-- name: Create HomeAssistant container.
-  containers.podman.podman_container:
-    pod: "{{ pod_name }}"
-    name: "{{ ha_name }}"
-    image: "ghcr.io/home-assistant/home-assistant:stable"
-    state: started
-    restart_policy: "on-failure"
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "{{ volumes['ha_config'] }}:/config:Z"
-
-- name: Copy mosquitto configuration.
-  ansible.builtin.template:
-    src: templates/mqtt/mosquitto.conf.j2
-    dest: "{{ volumes['mqtt_config'] }}/mosquitto.conf"
-    mode: "0644"
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-  become: true
-
-- name: Create Mosquitto container.
-  containers.podman.podman_container:
-    pod: "{{ pod_name }}"
-    name: "{{ mqtt_name }}"
-    image: "docker.io/library/eclipse-mosquitto"
-    state: started
-    restart_policy: "on-failure"
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "{{ volumes['mqtt_config'] }}/mosquitto.conf:/mosquitto/config/mosquitto.conf:Z"
-      - "{{ volumes['mqtt_data'] }}:/mosquitto/data:Z"
-      - "{{ volumes['mqtt_log'] }}:/mosquitto/log:Z"
-
+###########################
+#  tasks/zigbee2mqtt.yml  #
+###########################
 - name: Copy Zigbee2MQTT configuration.
   ansible.builtin.template:
     src: templates/z2m/configuration.yaml.j2
@@ -69,7 +13,7 @@
 
 - name: Change ownership of adapter.
   ansible.builtin.file:
-    path: "/dev/ttyUSB0"
+    path: "{{ zigbee_adapter }}"
     owner: "{{ ansible_user_id }}"
   become: true
 

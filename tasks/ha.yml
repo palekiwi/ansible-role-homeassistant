@@ -1,0 +1,14 @@
+---
+######################
+#  TASKS  #  ha.yml  #
+######################
+- name: Create HomeAssistant container.
+  containers.podman.podman_container:
+    pod: "{{ pod_name }}"
+    name: "{{ ha_name }}"
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    state: started
+    restart_policy: "on-failure"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "{{ volumes['ha_config'] }}:/config:Z"

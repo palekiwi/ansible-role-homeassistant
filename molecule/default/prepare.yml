@@ -1,0 +1,22 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create /dev/usbtty0.
+      ansible.builtin.command:
+        cmd: "mknod /dev/ttyUSB0 c 188 0"
+        creates: "/dev/ttyUSB0"
+
+    - name: Set group for /dev/ttyUSB0 to dialout.
+      ansible.builtin.file:
+        path: "/dev/ttyUSB0"
+        owner: root
+        group: dialout
+        mode: "0660"
+
+    - name: Ensure podman is installed.
+      ansible.builtin.package:
+        name: podman
+        state: present

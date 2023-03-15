@@ -1,0 +1,12 @@
+---
+########################
+#  TASKS  #  pod.yml   #
+########################
+- name: Ensure a pod for HomeAssistant exists.
+  containers.podman.podman_pod:
+    name: "{{ pod_name }}"
+    state: created
+    publish:
+      - "8080:8080"
+      - "8123:8123"
+      - "5050:5050"

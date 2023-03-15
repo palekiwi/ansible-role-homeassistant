@@ -1,13 +1,26 @@
 ---
 - name: Converge
   hosts: all
-  tasks:
+  vars:
+    appdaemon_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJmNzM3M2FhNWQ2YmY0OTU3YTJhYzM1ZjNjYmVlZGJjYiIsImlhdCI6MTY3ODg2MDQ1MSwiZXhwIjoxOTk0MjIwNDUxfQ.YBMlTctSKLuA5Z78Nb-G5B7Q2z9PXqUcY_TZYjeQ-ec
 
-    - name: Ensure original pod is removed.
+  tasks:
+    - name: Ensure ha pod is removed.
       containers.podman.podman_pod:
         name: ha
         state: absent
 
+    - name: Remove everything in /srv.
+      ansible.builtin.file:
+        path: "/srv/*"
+        state: absent
+      changed_when: true
+      when: false
+
     - name: "Include palekiwi.homeassistant"
       ansible.builtin.include_role:
         name: "palekiwi.homeassistant"
+
+    - name: Print machine ip.
+      ansible.builtin.debug:
+        var: ansible_host
