@@ -8,37 +8,78 @@
     state: present
   become: true
 
+- name: Ensure a dedicated user exists.
+  ansible.builtin.user:
+    name: "{{ user }}"
+    state: present
+  become: true
+
 - name: Ensure the user belongs to group dialout.
   ansible.builtin.user:
-    name: "{{ ansible_user_id }}"
+    name: "{{ user }}"
     groups: dialout
     append: true
   become: true
+
+- name: Ensure udev rule exists for "{{ zigbee_adapter }}".
+  ansible.builtin.copy:
+    dest: /etc/udev/rules.d/99-dongle.rules
+    content: 'KERNEL=="ttyUSB0", OWNER="{{ user }}"'
+    mode: "0644"
+  become: true
+
+- name: Ensure user owns "{{ zigbee_adapter }}".
+  ansible.builtin.file:
+    path: "{{ zigbee_adapter }}"
+    mode: "0660"
+    owner: "{{ user }}"
+    group: dialout
+  become: true
+
+- name: Set container_use_devices flag on and keep it persistent across reboots
+  become: true
+  ansible.posix.seboolean:
+    name: container_use_devices
+    state: true
+    persistent: true
 
 - name: Ensure volume directories exist.
   ansible.builtin.file:
     name: "{{ item.value }}"
     state: directory
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
     mode: "0755"
   loop: "{{ volumes | dict2items }}"
   become: true
 
-- name: Import tasks to create the pod.
-  ansible.builtin.import_tasks: pod.yml
+- name: Ensure required ports are open in firewall.
+  become: true
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    state: enabled
+    permanent: true
+  loop: "{{ ha_ports }}"
+  notify: Restart firewalld.
 
-- name: Import tasks for Home Assistant container.
-  ansible.builtin.import_tasks: ha.yml
+- name: Import tasks for user.
+  become: true
+  become_user: "{{ user }}"
+  block:
+    - name: Import tasks to create the pod.
+      ansible.builtin.import_tasks: pod.yml
 
-- name: Import tasks for MQTT container.
-  ansible.builtin.import_tasks: ha.yml
+    - name: Import tasks for Home Assistant container.
+      ansible.builtin.import_tasks: ha.yml
 
-- name: Import tasks for mqtt container.
-  ansible.builtin.import_tasks: mqtt.yml
+    - name: Import tasks for mqtt container.
+      ansible.builtin.import_tasks: mqtt.yml
 
-- name: Import tasks for zigbee2mqtt container.
-  ansible.builtin.import_tasks: zigbee2mqtt.yml
+    - name: Import tasks for zigbee2mqtt container.
+      ansible.builtin.import_tasks: zigbee2mqtt.yml
 
-- name: Import tasks for appdaemon container.
-  ansible.builtin.import_tasks: appdaemon.yml
+    - name: Import tasks for appdaemon container.
+      ansible.builtin.import_tasks: appdaemon.yml
+
+- name: Import tasks for systemd.
+  ansible.builtin.import_tasks: systemd.yml

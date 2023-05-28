@@ -6,24 +6,18 @@
   ansible.builtin.template:
     src: templates/z2m/configuration.yaml.j2
     dest: "{{ volumes['z2m_data'] }}/configuration.yaml"
+    force: false
     mode: "0644"
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
   become: true
-
-- name: Change ownership of adapter.
-  ansible.builtin.file:
-    path: "{{ zigbee_adapter }}"
-    owner: "{{ ansible_user_id }}"
-  become: true
-
 
 - name: Create zigbee2mqtt container.
   containers.podman.podman_container:
     pod: "{{ pod_name }}"
     name: "{{ pod_name }}-z2m"
     image: "docker.io/koenkk/zigbee2mqtt"
-    state: started
+    state: created
     restart_policy: "on-failure"
     group_add: dialout
     volumes:

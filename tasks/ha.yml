@@ -7,7 +7,7 @@
     pod: "{{ pod_name }}"
     name: "{{ pod_name }}-homeassistant"
     image: "ghcr.io/home-assistant/home-assistant:stable"
-    state: started
+    state: created
     restart_policy: "on-failure"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"

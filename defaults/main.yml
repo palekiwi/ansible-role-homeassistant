@@ -2,6 +2,12 @@
 # defaults file for homeassistant
 pod_name: ha
 
+pod_systemd_enabled: true
+pod_systemd_requires: []
+pod_systemd_after: []
+
+user: ha
+
 volumes:
   ha_config: "/srv/ha/config"
   mqtt_config: "/srv/mosquitto/config"

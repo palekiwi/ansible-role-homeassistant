@@ -6,9 +6,10 @@
   ansible.builtin.template:
     src: templates/mqtt/mosquitto.conf.j2
     dest: "{{ volumes['mqtt_config'] }}/mosquitto.conf"
+    force: false
     mode: "0644"
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
   become: true
 
 - name: Create Mosquitto container.
@@ -16,7 +17,7 @@
     pod: "{{ pod_name }}"
     name: "{{ pod_name }}-mqtt"
     image: "docker.io/library/eclipse-mosquitto"
-    state: started
+    state: created
     restart_policy: "on-failure"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"

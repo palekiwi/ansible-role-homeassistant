@@ -1,5 +1,6 @@
 ---
 - name: Ensure validity of access token.
+  when: false
   ansible.builtin.uri:
     url: "http://localhost:8123/api/states"
     headers:
@@ -13,7 +14,7 @@
     pod: "{{ pod_name }}"
     name: "{{ pod_name }}-appdaemon"
     image: "docker.io/acockburn/appdaemon:latest"
-    state: started
+    state: created
     restart_policy: "always"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"

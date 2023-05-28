@@ -1,2 +1,6 @@
 ---
 # vars file for homeassistant
+ha_ports:
+  - "8123/tcp"
+  - "8080/tcp"
+  - "5050/tcp"

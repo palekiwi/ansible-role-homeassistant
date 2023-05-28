@@ -1,0 +1,33 @@
+---
+- name: Check if user has lingering enabled.
+  ansible.builtin.command:
+    cmd: "ls /var/lib/systemd/linger"
+  changed_when: false
+  register: linger
+
+- name: Enable linger for user {{ user }}
+  become: true
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ user }}"
+  changed_when: true
+  when: "user not in linger.stdout"
+
+- name: Generate systemd units for {{ pod_name }}.
+  become: true
+  become_user: "{{ user }}"
+  containers.podman.podman_generate_systemd:
+    name: "{{ pod_name }}"
+    dest: "/home/{{ user }}/.config/systemd/user/"
+    requires: "{{ pod_systemd_requires }}"
+    after: "{{ pod_systemd_after }}"
+    restart_policy: "on-failure"
+
+- name: Ensure systemd units are started and enabled for {{ pod_name }}.
+  become: true
+  become_user: "{{ user }}"
+  ansible.builtin.systemd:
+    scope: user
+    daemon_reload: true
+    name: "pod-{{ pod_name }}"
+    enabled: "{{ pod_systemd_enabled }}"
+    state: started
