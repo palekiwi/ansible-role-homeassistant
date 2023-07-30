@@ -4,3 +4,8 @@ ha_ports:
   - "8123/tcp"
   - "8080/tcp"
   - "5050/tcp"
+
+ha_ports_ufw:
+  - { rule: "allow", port: 8123, proto: "tcp" }
+  - { rule: "allow", port: 8080, proto: "tcp" }
+  - { rule: "allow", port: 5050, proto: "tcp" }

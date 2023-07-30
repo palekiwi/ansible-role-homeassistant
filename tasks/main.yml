@@ -8,6 +8,13 @@
     state: present
   become: true
 
+- name: Ensure acl is installed.
+  when: ansible_facts['os_family'] == "Debian"
+  ansible.builtin.package:
+    name: acl
+    state: present
+  become: true
+
 - name: Ensure a dedicated user exists.
   ansible.builtin.user:
     name: "{{ user }}"
@@ -37,6 +44,7 @@
   become: true
 
 - name: Set container_use_devices flag on and keep it persistent across reboots
+  when: ansible_facts['os_family'] == "RedHat"
   become: true
   ansible.posix.seboolean:
     name: container_use_devices
@@ -54,6 +62,7 @@
   become: true
 
 - name: Ensure required ports are open in firewall.
+  when: ansible_facts['os_family'] == "RedHat"
   become: true
   ansible.posix.firewalld:
     port: "{{ item }}"
@@ -61,6 +70,15 @@
     permanent: true
   loop: "{{ ha_ports }}"
   notify: Restart firewalld.
+
+- name: Ensure required ports are open in ufw.
+  when: ansible_facts['os_family'] == "Debian"
+  become: true
+  community.general.ufw:
+    rule: "{{ item.rule }}"
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  loop: "{{ ha_ports_ufw }}"
 
 - name: Import tasks for user.
   become: true
