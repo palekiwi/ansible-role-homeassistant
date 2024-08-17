@@ -5,6 +5,8 @@ ha_ports:
   - "8080/tcp"
   - "5050/tcp"
 
+ha_interface: "tailscale0"
+
 ha_ports_ufw:
   - { rule: "allow", port: 8123, proto: "tcp" }
   - { rule: "allow", port: 8080, proto: "tcp" }

@@ -21,6 +21,6 @@
     restart_policy: "on-failure"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
-      - "{{ volumes['mqtt_config'] }}/mosquitto.conf:/mosquitto/config/mosquitto.conf:Z"
-      - "{{ volumes['mqtt_data'] }}:/mosquitto/data:Z"
-      - "{{ volumes['mqtt_log'] }}:/mosquitto/log:Z"
+      - "{{ volumes['mqtt_config'] }}/mosquitto.conf:/mosquitto/config/mosquitto.conf"
+      - "{{ volumes['mqtt_data'] }}:/mosquitto/data"
+      - "{{ volumes['mqtt_log'] }}:/mosquitto/log"

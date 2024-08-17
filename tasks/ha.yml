@@ -11,4 +11,4 @@
     restart_policy: "on-failure"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
-      - "{{ volumes['ha_config'] }}:/config:Z"
+      - "{{ volumes['ha_config'] }}:/config"

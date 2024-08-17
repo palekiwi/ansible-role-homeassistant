@@ -75,8 +75,10 @@
   when: ansible_facts['os_family'] == "Debian"
   become: true
   community.general.ufw:
+    interface: "{{ ha_interface }}"
+    direction: in
     rule: "{{ item.rule }}"
-    port: "{{ item.port }}"
+    to_port: "{{ item.port }}"
     proto: "{{ item.proto }}"
   loop: "{{ ha_ports_ufw }}"
 
